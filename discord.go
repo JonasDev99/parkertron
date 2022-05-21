@@ -267,7 +267,13 @@ func discordMessageHandler(dg *discordgo.Session, m *discordgo.MessageCreate, bo
 			//parse logs and append to current response.
 			for _, url := range allURLS {
 				Log.Debugf("passing %s to keyword parser", url)
-				urlResponse, _ := parseKeyword(allParsed[url], botName, channelKeywords, channelParsing)
+				// regex -- priority over keywords
+				urlResponse, _ := parseRegex(allParsed[url], botName, channelPatterns, channelParsing)
+
+				// keyword
+				if urlResponse == nil {
+					urlResponse, _ = parseKeyword(allParsed[url], botName, channelKeywords, channelParsing)
+				}
 				Log.Debugf("response length = %d", len(urlResponse))
 				if len(urlResponse) == 1 && urlResponse[0] == "" || len(urlResponse) == 0 {
 
